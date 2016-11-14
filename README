@@ -1,0 +1,21 @@
+Installing ZMap:
+
+- Download ZMap source code from https://zmap.io/download.html
+- xcode-select --install (maybe required)
+- brew install pkg-config (maybe required)
+- Install MacPorts from https://guide.macports.org/#installing.macports
+- sudo port install gmp libdnet byacc flex gengetopt cmake
+- brew install json-c (maybe required)
+- brew link json-c (maybe required)
+- cmake -DENABLE_DEVELOPMENT=OFF
+- make
+- sudo make install
+(I ran into error for this last step. The issue is here: https://github.com/zmap/zmap/issues/327. I fixed it deleting "/". Updated lines 2 and 6 of file InstallConfFiles.cmake by using "${PROJECT_SOURCE_DIR}conf/blacklist.conf" and "${PROJECT_SOURCE_DIR}conf/zmap.conf")
+
+If all the above steps are successful and zmap gives an error "command not found":
+	- Add export PATH=$PATH:/usr/local/sbin to ~/.bash_profile 
+	- source ~/.bash_profile
+
+For any installation issues, check here if anyone has already had the problem: https://github.com/zmap/zmap/issues
+or post the problem.
+
