@@ -7,6 +7,7 @@ Installing ZMap:
 - sudo port install gmp libdnet byacc flex gengetopt cmake
 - brew install json-c (maybe required)
 - brew link json-c (maybe required)
+Run the following commands from the zmap directory:
 - cmake -DENABLE_DEVELOPMENT=OFF
 - make
 - sudo make install
