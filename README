@@ -14,8 +14,9 @@ Run the following commands from the zmap directory:
 (I ran into error for this last step. The issue is here: https://github.com/zmap/zmap/issues/327. I fixed it deleting "/". Updated lines 2 and 6 of file InstallConfFiles.cmake by using "${PROJECT_SOURCE_DIR}conf/blacklist.conf" and "${PROJECT_SOURCE_DIR}conf/zmap.conf")
 
 If all the above steps are successful and zmap gives an error "command not found":
-	- Add export PATH=$PATH:/usr/local/sbin to ~/.bash_profile 
-	- source ~/.bash_profile
+	- Create a file "~/.bash_profile" if it does not exist
+	- Add "export PATH=$PATH:/usr/local/sbin" to the end of the file "~/.bash_profile" 
+	- In terminal, run "source ~/.bash_profile"
 
 For any installation issues, check here if anyone has already had the problem: https://github.com/zmap/zmap/issues
 or post the problem.
