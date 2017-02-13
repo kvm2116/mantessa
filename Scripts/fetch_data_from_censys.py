@@ -4,8 +4,8 @@ Co-Author: nb2776@columbia.edu
 
 Update Config.py with your censys UID and SECRET
 
-Run: python <date>
-Eg: python 20170207
+Run: python fetch_data_from_censys <date>
+Eg: python fetch_data_from_censys 20170207
 Date format-> Year+Month+Day
 
 This file fetches the ip+provinces for a particular date and stores in json format
@@ -21,7 +21,7 @@ SECRET = conf.SECRET
 c = censys.export.CensysExport(UID, SECRET)
 date_dat = sys.argv[1]
 # Start new Job
-res = c.new_job("select ip,location.province from ipv4."+date_dat)
+res = c.new_job("select ip,location.province from ipv4."+date_dat+" where location.registered_country_code=\"US\" LIMIT 5")
 print res
 job_id = res["job_id"]
 
