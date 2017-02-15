@@ -36,6 +36,9 @@ with open ('20170207.json', 'r') as ips, open('static.csv', 'w') as f:
 		lat = response.location.latitude
 		lon = response.location.longitude
 
+		if lat is None or lon is None:
+			continue 
+
 		if math.isclose(float(data['location']['latitude']), lat, rel_tol=1e-4) and math.isclose(float(data['location']['longitude']), lon, rel_tol=1e-4):
 			csv_static.writerow((data['ip'], lat, lon))
 			
