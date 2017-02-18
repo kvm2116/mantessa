@@ -1,6 +1,7 @@
 """
-Author: tusharag171@gmail.com/ta2482@columbia.edu
-Co-Author: nb2776@columbia.edu
+Author:	nb2776@columbia.edu
+		tusharag171@gmail.com/ta2482@columbia.edu
+
 
 Update Config.py with your censys UID and SECRET
 
@@ -21,7 +22,7 @@ SECRET = conf.SECRET
 c = censys.export.CensysExport(UID, SECRET)
 date_dat = sys.argv[1]
 # Start new Job
-res = c.new_job("select ip,location.province from ipv4."+date_dat+" where location.registered_country_code=\"US\" LIMIT 5")
+res = c.new_job("select ip, location.latitude, location.longitude from ipv4."+date_dat+" where location.registered_country_code=\"US\"")
 print res
 job_id = res["job_id"]
 
@@ -30,13 +31,20 @@ job_id = res["job_id"]
 
 job_loop =  c.check_job_loop(job_id)
 
-url = job_loop['download_paths'][0]
-
-"""
-f1 = open(date_dat+'.txt', 'w+')
-f1.write(job_loop['download_paths'][0])
-f1.write("\n")
-f1.close()
-"""
-
-urllib.urlretrieve(url, date_dat+'.json')
+#url = job_loop['download_paths'][0]
+#print (job_loop)
+#print (job_loop['download_paths'])
+#f1 = open(date_dat+'.json', 'a+')
+i = 0
+for url in job_loop['download_paths']:
+	urllib.urlretrieve(url, 'tmp.json')
+	with open(date_dat+'.json', 'a+') as output, open('tmp.json','r') as input:
+		while True: 
+			data = input.read(65536)
+			if data:
+				output.write(data)
+			else:
+				break
+	print url
+	print i
+	i = i+1
