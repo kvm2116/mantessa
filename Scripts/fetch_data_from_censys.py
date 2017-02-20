@@ -22,11 +22,9 @@ SECRET = conf.SECRET
 c = censys.export.CensysExport(UID, SECRET)
 date_dat = sys.argv[1]
 # Start new Job
-<<<<<<< HEAD
+
 res = c.new_job("select ip, location.latitude, location.longitude from ipv4."+date_dat+" where location.registered_country_code=\"US\"")
-=======
-res = c.new_job("select ip,location.province from ipv4."+date_dat+" where location.registered_country_code=\"US\"")
->>>>>>> 90d479c6f018503c7c464dd92130f8e6f9664e8e
+
 print res
 job_id = res["job_id"]
 
