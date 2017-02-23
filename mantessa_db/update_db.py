@@ -15,7 +15,7 @@ dbcursor = conn.cursor()
 
 
 try:
-	dbcursor.execute("alter table mantessa add d_"+f_name+" BOOLEAN")
+	dbcursor.execute("alter table mantessa add d_"+f_name+" BOOLEAN DEFAULT 0")
 	conn.commit()
 except Exception as e:
 	print "Oops!! Something went wrong "+str(e)
