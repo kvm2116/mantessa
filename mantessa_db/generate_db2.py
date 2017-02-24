@@ -12,12 +12,12 @@ conn = MySQLdb.connect(host= "localhost",
                   db="mantessa_db")
 dbcursor = conn.cursor()
 start = datetime.datetime.now()
-stmt = "INSERT INTO mantessa VALUES (INET_ATON(%s),%s,%s,,CURRENT_TIMESTAMP,1,0)"
+stmt = "INSERT INTO mantessa VALUES (INET_ATON(%s),%s,%s,1,1)"
 try:
 	for df in reader:
 		df=df.values.tolist()
 		l = len(df)
-		print l
+		print df
 		dbcursor.executemany(stmt,df)
 			
 	conn.commit()

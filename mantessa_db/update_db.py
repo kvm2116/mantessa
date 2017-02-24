@@ -2,7 +2,7 @@ import MySQLdb
 import pandas as pd
 import datetime
 
-f_name = '20170208'
+f_name = '20170209'
 reader = pd.read_csv(f_name+'.csv',chunksize=10000)
 #df2 = df.head()
 
@@ -31,7 +31,7 @@ try:
 		df=df.values.tolist()
 		for item in df:
 			#print item[1], item[2], item[3]
-			dbcursor.callproc('update_mantessa',('d_'+f_name,item[1],item[2],item[3]))
+			dbcursor.callproc('update_mantessa',('d_'+f_name,item[0],item[1],item[2]))
 			result = dbcursor.fetchall()
 						
 	conn.commit()
