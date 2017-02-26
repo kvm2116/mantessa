@@ -23,7 +23,7 @@ c = censys.export.CensysExport(UID, SECRET)
 date_dat = sys.argv[1]
 # Start new Job
 
-res = c.new_job("select ip, location.latitude, location.longitude from ipv4."+date_dat+" where location.country_code=\"US\"", "csv", True)
+res = c.new_job("select ip, location.latitude, location.longitude from ipv4."+date_dat+" where location.country_code=\"US\" and location.latitude <45 and location.latitude>40 and location.longitude<-72 and location.longitude>-80", "csv", True)
 
 print res
 job_id = res["job_id"]
