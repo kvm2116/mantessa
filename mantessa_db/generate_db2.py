@@ -5,6 +5,7 @@ import datetime
 reader = pd.read_csv('20170207.csv',chunksize=10000)
 #df2 = df.head()
 
+print " Do not press Ctl+C from here on!!"
 
 conn = MySQLdb.connect(host= "localhost",
                   user="root",
@@ -17,7 +18,8 @@ try:
 	for df in reader:
 		df=df.values.tolist()
 		l = len(df)
-		print df
+		print l
+		#print df
 		dbcursor.executemany(stmt,df)
 			
 	conn.commit()
