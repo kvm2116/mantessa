@@ -1,2 +1,2 @@
-UID = "aed1b78f-ea04-424a-943d-86059031afeb"
-SECRET = "xlNwZTNApklDJNyuyjD3RtCi75P0CLAx"
+UID = ""
+SECRET = ""
