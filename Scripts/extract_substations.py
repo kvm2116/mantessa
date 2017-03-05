@@ -29,7 +29,6 @@ for shape in shapeRecs:
     if i is 0 or i is num_points - 1:
       substations.add((point[1], point[0]))
 
-
 subwriter = csv.writer(open("endpoints.csv", 'w'))
 
 print("Writing to file")
