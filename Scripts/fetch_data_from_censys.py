@@ -23,7 +23,7 @@ c = censys.export.CensysExport(UID, SECRET)
 date_dat = sys.argv[1]
 # Start new Job
 
-res = c.new_job("select ip, location.latitude, location.longitude from ipv4."+date_dat+" where location.country_code=\"US\" and location.latitude <45 and location.latitude>40 and location.longitude<-72 and location.longitude>-80", "csv", True)
+res = c.new_job("select ip, location.latitude, location.longitude from ipv4."+date_dat+" where location.country_code=\"US\" and location.latitude <42 and location.latitude>32 and location.longitude<-114 and location.longitude>-125", "csv", True)
 
 print res
 job_id = res["job_id"]
@@ -40,7 +40,7 @@ job_loop =  c.check_job_loop(job_id)
 i = 0
 for url in job_loop['download_paths']:
 	urllib.urlretrieve(url, 'tmp.csv')
-	with open(date_dat+'.csv', 'a+') as output, open('tmp.csv','r') as input:
+	with open('../data/'+date_dat+'.csv', 'a+') as output, open('tmp.csv','r') as input:
 		while True: 
 			data = input.read(65536)
 			if data:

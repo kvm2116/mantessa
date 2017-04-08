@@ -2,9 +2,10 @@ import MySQLdb
 import pandas as pd
 import datetime
 import numpy as np
+import sys
 
-f_name = '20170208'
-reader = pd.read_csv(f_name+'.csv',chunksize=10000)
+date_dat = sys.argv[1]
+reader = pd.read_csv('../data/'+date_dat+'.csv',chunksize=10000)
 #df2 = df.head()
 
 print " Do not press Ctl+C from here on!!"
@@ -17,7 +18,7 @@ dbcursor = conn.cursor()
 
 
 try:
-	dbcursor.execute("alter table mantessa add d_"+f_name+" BOOLEAN DEFAULT 0")
+	dbcursor.execute("alter table mantessa add d_"+date_dat+" BOOLEAN DEFAULT 0")
 	conn.commit()
 except Exception as e:
 	print "Oops!! Something went wrong "+str(e)
@@ -27,16 +28,17 @@ dbcursor = conn.cursor()
 
 
 start = datetime.datetime.now()
-
+c= 0
 try:
 	for df in reader:
 		df = df[df.location_latitude.apply(lambda x: np.isreal(x))]
 		df = df[df.location_longitude.apply(lambda x: np.isreal(x))]
 		df=df.values.tolist()
-		print len(df)
+		c += len(df)
+		print c
 		for item in df:
 			#print item[1], item[2], item[3]
-			dbcursor.callproc('update_mantessa',('d_'+f_name,item[0],item[1],item[2]))
+			dbcursor.callproc('update_mantessa',('d_'+date_dat,item[0],item[1],item[2]))
 			result = dbcursor.fetchall()
 
 						
