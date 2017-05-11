@@ -1,6 +1,7 @@
 import MySQLdb
 import pandas as pd
 import datetime
+import numpy as np
 import sys
 
 date_dat = sys.argv[1]
@@ -9,12 +10,12 @@ reader = pd.read_csv('../data/'+date_dat+'.csv',chunksize=10000)
 
 print " Do not press Ctl+C from here on!!"
 
-
 conn = MySQLdb.connect(host= "localhost",
-                  user="ta2482",
-                  passwd="ta2482@mantessa",
+                  user="root",
+                  passwd="DNA@mantessa!",
                   db="mantessa_db")
 dbcursor = conn.cursor()
+
 
 try:
 	dbcursor.execute("alter table mantessa add d_"+date_dat+" BOOLEAN DEFAULT 0")
@@ -25,23 +26,27 @@ except Exception as e:
 
 dbcursor = conn.cursor()
 
+
 start = datetime.datetime.now()
-stmt = "INSERT IGNORE INTO mantessa VALUES (INET_ATON(%s),%s,%s,1,1)"
+c= 0
 try:
 	for df in reader:
+		df = df[df.location_latitude.apply(lambda x: np.isreal(x))]
+		df = df[df.location_longitude.apply(lambda x: np.isreal(x))]
 		df=df.values.tolist()
-		l = len(df)
-		print l
-		#print df
-		dbcursor.executemany(stmt,df)
-	stmt2 = "delete from mantessa where ip = 0;"	
-	dbcursor.execute(stmt2)	
+		#c += len(df)
+		#print c
+		for item in df:
+			#print item[1], item[2], item[3]
+			dbcursor.callproc('update_mantessa',('d_'+date_dat,item[0],item[1],item[2]))
+			result = dbcursor.fetchall()
+
+						
 	conn.commit()
 except Exception as e:
 	print "Oops!! Something went wrong "+str(e) 
 	conn.rollback()
 end = datetime.datetime.now()
+
 print end-start
 conn.close()
-
-### Code cleaning: delete from mantessa where ip = 0;

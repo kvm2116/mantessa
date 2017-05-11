@@ -1,21 +1,33 @@
 import MySQLdb
 import pandas as pd
 import datetime
-import numpy as np
 import sys
+from ip import *
+
+print "Starting Pre-Processing"
 
 date_dat = sys.argv[1]
+df1 = pd.read_csv('../data/'+date_dat+'.csv')
+df1['ip'] = df1['ip'].apply(lambda x: ip2long(x))
+df1 = df1[df1.ip.apply(lambda x: x!=-1)]
+df1 = df1.sort_values('ip')
+df1.to_csv('../data/'+date_dat+'.csv',index=False)
+lst = [df1]
+del df1
+del lst
+
+print "Pre-Processing done!"
+
 reader = pd.read_csv('../data/'+date_dat+'.csv',chunksize=10000)
-#df2 = df.head()
 
 print " Do not press Ctl+C from here on!!"
 
+
 conn = MySQLdb.connect(host= "localhost",
                   user="root",
-                  passwd="",
+                  passwd="DNA@mantessa!",
                   db="mantessa_db")
 dbcursor = conn.cursor()
-
 
 try:
 	dbcursor.execute("alter table mantessa add d_"+date_dat+" BOOLEAN DEFAULT 0")
@@ -25,28 +37,25 @@ except Exception as e:
 	conn.rollback()
 
 dbcursor = conn.cursor()
-
-
+col= 'd_'+date_dat
 start = datetime.datetime.now()
-c= 0
+stmt = "INSERT IGNORE INTO mantessa (ip,latitude,longitude,"+col+") VALUES (%s,%s,%s,1) ON DUPLICATE KEY UPDATE counter=counter+1 ,"+col+"=1;"
+c = 0
 try:
 	for df in reader:
-		df = df[df.location_latitude.apply(lambda x: np.isreal(x))]
-		df = df[df.location_longitude.apply(lambda x: np.isreal(x))]
 		df=df.values.tolist()
-		c += len(df)
-		print c
-		for item in df:
-			#print item[1], item[2], item[3]
-			dbcursor.callproc('update_mantessa',('d_'+date_dat,item[0],item[1],item[2]))
-			result = dbcursor.fetchall()
-
-						
+		#c+= len(df)
+		#print c
+		#print df
+		dbcursor.executemany(stmt,df)
+	stmt2 = "delete from mantessa where ip = 0;"	
+	dbcursor.execute(stmt2)	
 	conn.commit()
 except Exception as e:
 	print "Oops!! Something went wrong "+str(e) 
 	conn.rollback()
 end = datetime.datetime.now()
-
 print end-start
 conn.close()
+
+### Code cleaning: delete from mantessa where ip = 0;

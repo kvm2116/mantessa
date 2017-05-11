@@ -1,1 +1,3 @@
 *.csv
+query_db.py  
+r.py
