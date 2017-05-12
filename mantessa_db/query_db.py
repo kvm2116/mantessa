@@ -12,7 +12,8 @@ print " Do not press Ctl+C from here on!!"
 
 #os.system("mysql -e \"select latitude,longitude, c1 as Off, c2 as Total, c1/c2 as fraction from ((select latitude, longitude, count(*) as c1 from mantessa where counter>=30 and d_20170430=0 group by latitude,longitude)a natural join  (select latitude, longitude, count(*) as c2 from mantessa where counter>=30 group by latitude,longitude)b) order by fraction desc;\" -u jmz2135 -p mantessa_db | tr '\t' ',' > ../failure_data/d_"+date_dat+"_frac.csv")
 
-os.system("mysql -e \"select latitude,longitude, c1 as Off, c2 as Total, c1/c2 as fraction from ((select latitude, longitude, count(*) as c1 from mantessa where d_20170207=0 and counter >= 30 group by latitude,longitude)a natural join  (select latitude, longitude, count(*) as c2 from mantessa where counter >= 30 group by latitude,longitude)b) order by fraction desc;\"  -u root -p  mantessa_db | tr '\t' ',' > ../failure_data/sausilito.csv");
+# Fractional Distribution dump code
+os.system("mysql -e \"select latitude,longitude, c1 as Off, c2 as Total, c1/c2 as fraction from ((select latitude, longitude, count(*) as c1 from mantessa where d_20170123=0 and counter >= 50 group by latitude,longitude)a natural join  (select latitude, longitude, count(*) as c2 from mantessa where counter >=50 group by latitude,longitude)b) order by fraction desc;\"  -u root -p  mantessa_db | tr '\t' ',' > ../failure_data/sau_50t.csv");
 
 #os.system("mysql -e \"select *  from mantessa where latitude = 38.5816000 and longitude = -121.4944000 \" -u root -p  mantessa_db | tr '\t' ',' > ../failure_data/sacramento.csv")
 #df = pd.read_csv("../failure_data/d_"+date_dat+"_frac.csv")
