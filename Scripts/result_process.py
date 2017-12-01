@@ -1,6 +1,12 @@
 import sys
 import csv
 import operator
+import MySQLdb as mdb
+import pandas as pd
+
+from config import USERNAME
+from config import PASSWORD
+from db_config import COLUMN_NAME
 
 '''
 reads csvs to fill in newCurrIPs and newSuccessIPs lists with IPs with updated scores
@@ -84,24 +90,39 @@ def main():
 	min_perc = 0.7
 	min_hit = 10
 
-	#opening and sorting corresponding csvs
-	try:
-		successIPsReader = csv.reader(open(sys.argv[1], 'rb'))
-		successIPsSorted = sorted(successIPsReader, key=operator.itemgetter(0))
-	except:
-		print "no file name inputed"
-		exit()
+        #Connect to database
+        try:
+            db_connection = mdb.connect('localhost', USERNAME, PASSWORD, 'mantessa_db8')
 
-	try:
-		ipScoresReader = csv.reader(open('ipscores.csv', 'rb'))
-		currIPsSorted = sorted(ipScoresReader, key=operator.itemgetter(0))
-	except:
-		currIPsSorted = []
+            successIPsSorted = pd.read_sql('SELECT ip FROM mantessa WHERE ' + COLUMN_NAME + '=1;', con=db_connection)        
+            #The below line is not scalable
+            currIPsSorted = pd.read_sql('SELECT ip, ping_count, score FROM mantessa;', con=db_connection)
+            
+        except:
+            print "Could not connect to database" 
+            exit()
+	#opening and sorting corresponding csvs
+	#try:
+	# 	successIPsReader = csv.reader(open(sys.argv[1], 'rb'))
+	#	successIPsSorted = sorted(successIPsReader, key=operator.itemgetter(0))
+	        
+        #except:
+	#	print "no file name inputed"
+	#	exit()
+
+	#try:
+	#	ipScoresReader = csv.reader(open('ipscores.csv', 'rb'))
+	#	currIPsSorted = sorted(ipScoresReader, key=operator.itemgetter(0))
+	#except:
+	#	currIPsSorted = []
+
+        successIPsSorted.sort_values(by='ip', inplace=True)
+        currIPsSorted.sort_values(by='ip', inplace=True)
 
 	newCurrIPs = []
 	newSuccessIPs = []
 
-	score_update(alpha, successIPsSorted, currIPsSorted, newCurrIPs, newSuccessIPs)
+	score_update(alpha, list(successIPsSorted.itertuples(index=False)), list(currIPsSorted.itertuples(index=False)), newCurrIPs, newSuccessIPs)
 	popIPs(swap_rate, min_perc, min_hit, newCurrIPs)
 
 	# try:
@@ -117,14 +138,18 @@ def main():
 	#wipe old file and write in new values
 	open("ipscores.csv", "w").close()
 	ipScoresWriter = csv.writer(open('ipscores.csv', 'wb'))
+        
+        dtWriter = csv.writer(open(COLUMN_NAME+'+scores.csv', 'wb'))
 
 	for ip in newCurrIPs:
 		ipScoresWriter.writerow(ip)
-
+                dtWriter.writerow(ip)
 	for ip in newSuccessIPs:
 		ipScoresWriter.writerow(ip)
+                dtWriter.writerow(ip)
 
-	print sys.argv[1], "complete"
+        print "complete"
+	#print sys.argv[1], "complete"
 	print
 
 
