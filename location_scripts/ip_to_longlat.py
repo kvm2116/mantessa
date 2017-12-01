@@ -16,19 +16,18 @@ import geoip2.database as db
 import geoip2
 import math
 import csv
+import sys
 
-reader = db.Reader('./GeoIP2-City.mmdb')
+reader = db.Reader(sys.argv[3])
 
 ip_locations = {}
 invalidC = 0
 
-with open ('20170114.csv', 'r') as ips, open('static_20170114e.csv', 'w') as f:
+with open (sys.argv[1], 'r') as ips, open(sys.argv[2], 'w') as f:
 	csv_reader = csv.reader(ips, delimiter=',', quotechar='|')
 	csv_static = csv.writer(f)
-
+	
 	for i, data in enumerate(csv_reader):
-		if i < 3773958:
-			continue
 		try: 
 			response = reader.city(data[0])
 		except:# (geoip2.errors.AddressNotFoundError, ValueError): 
@@ -36,12 +35,8 @@ with open ('20170114.csv', 'r') as ips, open('static_20170114e.csv', 'w') as f:
 			continue 
 		lat = response.location.latitude
 		lon = response.location.longitude
-
 		if lat is None or lon is None:
 			continue 
 
-		if math.isclose(float(data[1]), float(lat), rel_tol=1e-4) and math.isclose(float(data[2]), float(lon), rel_tol=1e-4):
-			csv_static.writerow((data[0], lat, lon))
-			
-		# print("C: " + str(data['location']['latitude']) + " MM: " + str(lat))
-		# print("C: " + str(data['location']['longitude']) + " MM: " + str(lon)) 	
+		csv_static.writerow([data[0], lat, lon, response.postal.code, response.subdivisions.most_specific.iso_code, response.city.name]) 
+
