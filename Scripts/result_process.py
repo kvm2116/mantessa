@@ -7,6 +7,7 @@ import pandas as pd
 from config import USERNAME
 from config import PASSWORD
 from db_config import COLUMN_NAME
+from sqlalchemy import create_engine
 
 
 '''
@@ -98,12 +99,18 @@ def main():
             successIPsSorted = pd.read_sql('SELECT ip FROM mantessa WHERE ' + COLUMN_NAME + '=1;', con=db_connection)        
             allIPsSorted = pd.read_sql('SELECT ip, zipCode, ' + COLUMN_NAME + '  FROM mantessa', con=db_connection)
             #The below line is not scalable
-            currIPsSorted = pd.read_sql('SELECT ip, ping_count, score FROM mantessa;', con=db_connection)
-            
+            currIPsSorted = pd.read_sql('SELECT ip, ping_count FROM mantessa;', con=db_connection)
+            curScores = pd.read_sql('SELECT ip, score FROM mtsa_scores', con=db_connection)
+           
         except:
             print "Could not connect to database" 
             exit()
-	#opening and sorting corresponding csvs
+	
+        currIPsSorted = currIPsSorted.merge(curScores, on='ip')
+        currIPsSorted = currIPsSorted.sort_values(by='ip')
+        
+            
+            #opening and sorting corresponding csvs
 	#try:
 	# 	successIPsReader = csv.reader(open(sys.argv[1], 'rb'))
 	#	successIPsSorted = sorted(successIPsReader, key=operator.itemgetter(0))
@@ -146,12 +153,17 @@ def main():
         allIPsList = newCurrIPs + newSuccessIPs
         allIPsDf = pd.DataFrame(allIPsList, columns=['ip', 'ping_count', 'score'])
         allIPsDf = allIPsDf.merge(allIPsSorted, on='ip')
+        allIPsDf = allIPsDf.sort_values(by='ip')
         allIPsDf.to_csv("ipscores.csv", index=False)
-        #merge
-        #dump to csv
+
 #	for ip in newCurrIPs:
 #		ipScoresWriter.writerow(ip)
 #                dtWriter.writerow(ip)
+
+
+        print "Updating Scores in DB"
+        engine = create_engine("mysql://"+USERNAME+":"+PASSWORD+"@localhost/mantessa_db8")
+        allIPsDf[['ip','score']].to_sql('mtsa_scores', engine, if_exists='replace', index=False, chunksize=1000) 
 
         print "complete"
 	#print sys.argv[1], "complete"
