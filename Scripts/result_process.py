@@ -8,6 +8,7 @@ from config import USERNAME
 from config import PASSWORD
 from db_config import COLUMN_NAME
 
+
 '''
 reads csvs to fill in newCurrIPs and newSuccessIPs lists with IPs with updated scores
 sorts newCurrIPs with smallest scores at the top
@@ -95,6 +96,7 @@ def main():
             db_connection = mdb.connect('localhost', USERNAME, PASSWORD, 'mantessa_db8')
 
             successIPsSorted = pd.read_sql('SELECT ip FROM mantessa WHERE ' + COLUMN_NAME + '=1;', con=db_connection)        
+            allIPsSorted = pd.read_sql('SELECT ip, zipCode, ' + COLUMN_NAME + '  FROM mantessa', con=db_connection)
             #The below line is not scalable
             currIPsSorted = pd.read_sql('SELECT ip, ping_count, score FROM mantessa;', con=db_connection)
             
@@ -137,16 +139,19 @@ def main():
 
 	#wipe old file and write in new values
 	open("ipscores.csv", "w").close()
-	ipScoresWriter = csv.writer(open('ipscores.csv', 'wb'))
+#	ipScoresWriter = csv.writer(open('ipscores.csv', 'wb'))
         
-        dtWriter = csv.writer(open(COLUMN_NAME+'+scores.csv', 'wb'))
+#        dtWriter = csv.writer(open(COLUMN_NAME+'+scores.csv', 'wb'))
 
-	for ip in newCurrIPs:
-		ipScoresWriter.writerow(ip)
-                dtWriter.writerow(ip)
-	for ip in newSuccessIPs:
-		ipScoresWriter.writerow(ip)
-                dtWriter.writerow(ip)
+        allIPsList = newCurrIPs + newSuccessIPs
+        allIPsDf = pd.DataFrame(allIPsList, columns=['ip', 'ping_count', 'score'])
+        allIPsDf = allIPsDf.merge(allIPsSorted, on='ip')
+        allIPsDf.to_csv("ipscores.csv", index=False)
+        #merge
+        #dump to csv
+#	for ip in newCurrIPs:
+#		ipScoresWriter.writerow(ip)
+#                dtWriter.writerow(ip)
 
         print "complete"
 	#print sys.argv[1], "complete"
