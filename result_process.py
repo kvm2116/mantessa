@@ -4,6 +4,16 @@ import operator
 import pandas as pd
 import MySQLdb
 
+import socket, struct
+
+
+def ip2long(ip):
+        """
+        Convert an IP string to long
+        """
+        packedIP = socket.inet_aton(ip)
+        return struct.unpack("!L", packedIP)[0]
+
 '''
 reads csvs to fill in newCurrIPs and newSuccessIPs lists with IPs with updated scores
 sorts newCurrIPs with smallest scores at the top
@@ -130,23 +140,33 @@ def compute_bt(dt_file):
     else:
       newCurrIPs[i].append(0)
 
+  #This works
+  zcodes = get_zip_codes([ip2long(x[0]) for x in newSuccessIPs], dbcursor)
+
   for i, ip in enumerate(newSuccessIPs):
+    newSuccessIPs[i].append(zcodes[i])
     if ip in successIPsSorted:
       newSuccessIPs[i].append(1)
     else:
       newSuccessIPs[i].append(0)
 
   #wipe old file and write in new values
-  open("ipscores.csv", "w").close()
+  open("./current_data/ipscores.csv", "w").close()
   ipScoresWriter = csv.writer(open('ipscores.csv', 'wb'))
 
   for ip in newCurrIPs:
     ipScoresWriter.writerow(ip)
-    print ip
 
   for ip in newSuccessIPs:
     ipScoresWriter.writerow(ip)
-    print ip
 
   print "complete"
+
+def get_zip_codes(ips, crsr):
+  stmt = "SELECT zipCode FROM scandata WHERE ip="
+  zcode = []
+  for ip in ips:
+    crsr.execute(stmt + str(ip))
+    zcode.append(crsr.fetchall()[0][0])
+  return zcode
 

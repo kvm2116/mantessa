@@ -7,10 +7,11 @@ import datetime
 import database
 import sys 
 import result_process 
+import viz
 
 #ZMAP_SCAN_DATA = 'current_zmap_data.txt'
-WHITELIST_FILE = "./whitelist.csv"
-
+WHITELIST_FILE = "./source_data/whitelist.csv"
+GEO_JSON_PATH = "./source_data/us_census_zipcodes.json" #TODO 
 
 
 def main():
@@ -21,7 +22,8 @@ def main():
   # Run scoring algorithm
   score(dt_file)
 
-  # update_map()
+  # Update map data source
+  update_map()
 
 
 # Run a zmap scan
@@ -34,7 +36,7 @@ def run_scan():
 
   #######################################################
   #Commenting out scan and replacing dt file for testing 
-  dt_file = 'd_20180127T20_45_31'
+  dt_file = './scan/datad_20180127T20_45_31'
   # subprocess.call("touch " + dt_file +" && sudo /usr/local/Cellar/zmap/2.1.1/sbin/zmap -B 15M --probe-module=icmp_echoscan --whitelist-file=\"" + WHITELIST_FILE + "\" -o -")# + dt_file)
   #######################################################
 
@@ -54,15 +56,17 @@ def run_scan():
 # Run the scoring algorithm 
 # When the scores are computed do 2 things
 #     #1. Send the top N IPs to the mapping job
-#     2. Write the list of IPs to scan next time back to a file
+#     TODO: 2. Write the list of IPs to scan next time back to a file
 def score(dt_file):
   result_process.compute_bt(dt_file)  
 
 
 # If the map is not runnig, run it
 # Write a new datafile for the map to read from 
-#def update_map():
+def update_map():
+  #TODO check if server is running 
 
+  viz.compute_viz(GEO_JSON_PATH, "ipscores.csv")
 
 
 main() 
