@@ -1,6 +1,6 @@
 # Python pipeline to execute all 
 # functionality for MANTESSA pipeline 
-
+import os 
 import subprocess
 from subprocess import call 
 import datetime 
@@ -18,7 +18,7 @@ def main():
   dt_file = run_scan()
 
   # Run scoring algorithm
-  score(dt_file)
+  #score(dt_file)
 
   # update_map()
 
@@ -41,7 +41,7 @@ def run_scan():
   pid = os.fork()
   if pid == 0:
     # child
-    database.insert_colun(dt_file)
+    database.insert_column(dt_file)
     print("Database updated successfully")
     sys.exit(0)
   else:
@@ -54,7 +54,7 @@ def run_scan():
 # When the scores are computed do 2 things
 #     1. Send the top N IPs to the mapping job
 #     2. Write the list of IPs to scan next time back to a file
-def score(dt_file):
+#def score(dt_file):
   
 
 

@@ -1,17 +1,26 @@
 import sys
 import csv
 import operator
-import MySQLdb as mdb
+import MySQLdb
 import pandas as pd
-import ip
 
-from config import USERNAME
-from config import PASSWORD
-from db_config import COLUMN_NAME
+# from config import USERNAME
+#from config import PASSWORD
 from sqlalchemy import create_engine
+import traceback
+
+import socket, struct
+
+def ip2long(ip):
+        """
+        Convert an IP string to long
+        """
+        packedIP = socket.inet_aton(ip)
+        return struct.unpack("!L", packedIP)[0]
 
 def insert_column(scan_result_file_name):
   col_name = scan_result_file_name
+
   #Establish DB connection
   conn = MySQLdb.connect(host= "localhost",
                           user="root",
@@ -35,16 +44,18 @@ def insert_column(scan_result_file_name):
   stmt = "INSERT IGNORE INTO mantessa (ip,"+col_name+") VALUES (%s,1) ON DUPLICATE KEY UPDATE counter=counter+1 ,"+col_name+"=1;"
   try:
     scan_result_file = open(scan_result_file_name, 'r')
-    lines = f.readlines()
-
+    lines = scan_result_file.readlines()
     # For each IP in file (each is up), update db row
     # good thing we have that index! 
     for ip in lines:
-      ip_long = ip.ip2long(ip)
-      dbcursor.execute(stmt, ip_long)
+      ip_long = ip2long(ip)
+      dbcursor.execute(stmt, [(ip_long)])
+
+    dbcursor.execute("DELETE FROM mantessa WHERE ip = 0;")
     conn.commit()
-  except:
+  except Exception as e:
     print "Oops!! Something went wrong "+str(e)
+    print traceback.print_exc()
     conn.rollback()  
 
   conn.close()
