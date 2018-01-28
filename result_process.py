@@ -17,7 +17,7 @@ def score_update(alpha, successIPsSorted, currIPsSorted, newCurrIPs, newSuccessI
   while s < len(successIPsSorted) and c < len(currIPsSorted):
     success = successIPsSorted[s][0]
     print(currIPsSorted)
-    curr, total_str, score_str = currIPsSorted[c]
+    curr, total_str, score_str, zipCode = currIPsSorted[c]
     total = float(total_str)
     score = float(score_str)
     
@@ -27,18 +27,18 @@ def score_update(alpha, successIPsSorted, currIPsSorted, newCurrIPs, newSuccessI
     this means all additions, start at 1/1 scoring
     '''
     if success < curr:
-      newSuccessIPs.append([success, 1, 1])
+      newSuccessIPs.append([success, 1, 1, zipCode])
       s += 1
     elif success == curr:
       new_score = (1 - alpha) * score + alpha * 1
       total += 1
-      newCurrIPs.append([curr, total, new_score])
+      newCurrIPs.append([curr, total, new_score, zipCode])
       s += 1
       c += 1
     else:
       new_score = (1 - alpha) * score + alpha * 0
       total += 1
-      newCurrIPs.append([curr, total, new_score])
+      newCurrIPs.append([curr, total, new_score, zipCode])
       c += 1
 
   #adding in additional successful IPs
@@ -108,7 +108,7 @@ def compute_bt(dt_file):
   # TODO: We temporarily assume here that ipScoresReader and successIpsReader 
   # are strictly parallel lists. 
   try:
-    ipScoresDf = pd.read_sql('SELECT ip, counter, score FROM scandata;', con=conn)
+    ipScoresDf = pd.read_sql('SELECT ip, counter, score, zipCode FROM scandata;', con=conn)
     #currIPsSorted = sorted(ipScoresReader, key=operator.itemgetter(0))
     # TODO add DF support 
     currIPsSorted = ipScoresDf.sort(['ip', 'score']).tolist()
@@ -121,15 +121,32 @@ def compute_bt(dt_file):
   score_update(alpha, successIPsSorted, currIPsSorted, newCurrIPs, newSuccessIPs)
   popIPs(swap_rate, min_perc, min_hit, newCurrIPs)
 
+  ## Do for newCurrIPs and newSuccessIPs
+  # TODO optimize this bc theyre each sorted 
+  # it also might better be done above 
+  for i, ip in enumerate(newCurrIPs):
+    if ip in successIPsSorted:
+      newCurrIPs[i].append(1)
+    else:
+      newCurrIPs[i].append(0)
+
+  for i, ip in enumerate(newSuccessIPs):
+    if ip in successIPsSorted:
+      newSuccessIPs[i].append(1)
+    else:
+      newSuccessIPs[i].append(0)
+
   #wipe old file and write in new values
   open("ipscores.csv", "w").close()
   ipScoresWriter = csv.writer(open('ipscores.csv', 'wb'))
 
   for ip in newCurrIPs:
     ipScoresWriter.writerow(ip)
+    print ip
 
   for ip in newSuccessIPs:
     ipScoresWriter.writerow(ip)
+    print ip
 
   print "complete"
 

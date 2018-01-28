@@ -59,10 +59,10 @@ def score(dt_file):
   result_process.compute_bt(dt_file)  
 
 
-
 # If the map is not runnig, run it
 # Write a new datafile for the map to read from 
 #def update_map():
+
 
 
 main() 
