@@ -6,6 +6,7 @@ from subprocess import call
 import datetime 
 import database
 import sys 
+import result_process 
 
 #ZMAP_SCAN_DATA = 'current_zmap_data.txt'
 WHITELIST_FILE = "./whitelist.csv"
@@ -18,7 +19,7 @@ def main():
   dt_file = run_scan()
 
   # Run scoring algorithm
-  #score(dt_file)
+  score(dt_file)
 
   # update_map()
 
@@ -52,10 +53,10 @@ def run_scan():
 
 # Run the scoring algorithm 
 # When the scores are computed do 2 things
-#     1. Send the top N IPs to the mapping job
+#     #1. Send the top N IPs to the mapping job
 #     2. Write the list of IPs to scan next time back to a file
-#def score(dt_file):
-  
+def score(dt_file):
+  result_process.compute_bt(dt_file)  
 
 
 

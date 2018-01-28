@@ -1,0 +1,15 @@
+CREATE TABLE scandata (
+    ip int,
+    latitude decimal,
+    longitude decimal,
+    counter int,
+    zipCode varchar(10),
+    stateCode varchar(3),
+    cityName varchar(25),
+    county varchar(25),
+    score decimal,
+    PRIMARY KEY (ip)
+);
+
+
+# CREATE INDEX idx on scandata (ip)
