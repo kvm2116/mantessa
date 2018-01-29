@@ -3,6 +3,7 @@ import csv
 import operator
 import MySQLdb
 import pandas as pd
+import ntpath
 
 # from config import USERNAME
 #from config import PASSWORD
@@ -19,7 +20,7 @@ def ip2long(ip):
         return struct.unpack("!L", packedIP)[0]
 
 def insert_column(scan_result_file_name):
-  col_name = scan_result_file_name
+  col_name = ntpath.basename(scan_result_file_name)
 
   #Establish DB connection
   conn = MySQLdb.connect(host= "localhost",

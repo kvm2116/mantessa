@@ -1,3 +1,5 @@
+# Tables 
+
 CREATE TABLE scandata (
     ip int,
     latitude decimal,
@@ -11,10 +13,22 @@ CREATE TABLE scandata (
     PRIMARY KEY (ip)
 );
 
-
-# CREATE INDEX idx on scandata (ip)
-
-
 CREATE TABLE scores (
-
+  ip int,
+  curscore double,
+  PRIMARY KEY (ip)
 )
+
+# Index Creation
+
+CREATE INDEX idx on scandata (ip)
+CREATE INDEX scoreidx on scores (ip)
+
+
+# Create trigger
+
+CREATE TRIGGER score_sync AFTER INSERT ON scores
+  FOR EACH ROW
+    INSERT INTO scandata (ip, score) 
+    VALUES (NEW.ip, NEW.curscore) 
+    ON DUPLICATE KEY UPDATE score=NEW.curscore;

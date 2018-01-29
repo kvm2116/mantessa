@@ -36,8 +36,8 @@ def run_scan():
 
   #######################################################
   #Commenting out scan and replacing dt file for testing 
-  dt_file = './scan_data/d_20180127T20_45_31'
-  # subprocess.call("touch " + dt_file +" && sudo /usr/local/Cellar/zmap/2.1.1/sbin/zmap -B 15M --probe-module=icmp_echoscan --whitelist-file=\"" + WHITELIST_FILE + "\" -o -")# + dt_file)
+  dt_file = './scan_data/d_20180129T15_46'
+  #subprocess.call("touch " + dt_file +" && sudo /usr/local/Cellar/zmap/2.1.1/sbin/zmap -B 15M --probe-module=icmp_echoscan --whitelist-file=\"" + WHITELIST_FILE + "\" -o " + dt_file)
   #######################################################
 
   # Fork to insert into DB 

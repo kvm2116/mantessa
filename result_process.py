@@ -180,7 +180,10 @@ def get_zip_codes(ips, crsr):
   zcode = []
   for ip in ips:
     crsr.execute(stmt + str(ip))
-    zcode.append(crsr.fetchall()[0][0])
+    try:
+      zcode.append(crsr.fetchall()[0][0])
+    except:
+      zcode.append('unknown')
   return zcode
 
 def update_score_table(dt, ip_scores_curr, ip_scores_success): 
