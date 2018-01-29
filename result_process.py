@@ -3,6 +3,9 @@ import csv
 import operator
 import pandas as pd
 import MySQLdb
+import os 
+import traceback
+import ntpath
 
 import socket, struct
 
@@ -160,6 +163,16 @@ def compute_bt(dt_file):
   for ip in newSuccessIPs:
     ipScoresWriter.writerow(ip)
 
+  pid = os.fork()
+  if pid == 0:
+    # child
+    update_score_table(dt_file, newCurrIPs, newSuccessIPs)
+    print("Database updated successfully")
+    sys.exit(0)
+  else:
+    # parent
+    pass 
+
   print "complete"
 
 def get_zip_codes(ips, crsr):
@@ -169,4 +182,51 @@ def get_zip_codes(ips, crsr):
     crsr.execute(stmt + str(ip))
     zcode.append(crsr.fetchall()[0][0])
   return zcode
+
+def update_score_table(dt, ip_scores_curr, ip_scores_success): 
+  col_name = ntpath.basename(dt)
+
+  #Establish DB connection
+  conn = MySQLdb.connect(host= "localhost",
+                          user="mantessa",
+                          passwd="DNA@mantessa!",
+                          db="mantessa_pipeline")
+
+  dbcursor = conn.cursor()
+
+  #Create column for current scan
+  # TODO when we only scan some IPs at a time, we'll need some flag to indicate if an
+  # IP wasn't scanned at all (0 implies scanned and off)
+  try:
+    dbcursor.execute("alter table scores add "+col_name+" DECIMAL DEFAULT 0")
+    conn.commit()
+  except Exception as e:
+    print "Oops!! Something went wrong "+str(e)
+    conn.rollback()  
+
+  #Update database
+  #TODO increase efficieny (bulk statement execution AND file iteration)
+  stmt = "INSERT IGNORE INTO scores (ip,curscore,"+col_name+") VALUES ( %s , %s , %s ) ON DUPLICATE KEY UPDATE curscore=%s , "+col_name+"=%s;"
+  try:
+    # For each IP in file (each is up), update db row
+    # good thing we have that index! 
+    for ip in ip_scores_curr:
+      ip_long = ip2long(ip[0])
+      s = ip[2]
+      dbcursor.execute(stmt, [ip_long, s, s ,s ,s])
+
+    for ip in ip_scores_success:
+      ip_long = ip2long(ip[0])
+      s = ip[2]
+      dbcursor.execute(stmt, [ip_long, s, s ,s ,s])
+
+    dbcursor.execute("DELETE FROM scandata WHERE ip = 0;")
+    conn.commit()
+  except Exception as e:
+    print "Oops!! Something went wrong "+str(e)
+    print traceback.print_exc()
+    conn.rollback()  
+
+  conn.close()
+
 

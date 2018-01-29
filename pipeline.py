@@ -36,7 +36,7 @@ def run_scan():
 
   #######################################################
   #Commenting out scan and replacing dt file for testing 
-  dt_file = './scan/datad_20180127T20_45_31'
+  dt_file = './scan_data/d_20180127T20_45_31'
   # subprocess.call("touch " + dt_file +" && sudo /usr/local/Cellar/zmap/2.1.1/sbin/zmap -B 15M --probe-module=icmp_echoscan --whitelist-file=\"" + WHITELIST_FILE + "\" -o -")# + dt_file)
   #######################################################
 
@@ -58,6 +58,7 @@ def run_scan():
 #     #1. Send the top N IPs to the mapping job
 #     TODO: 2. Write the list of IPs to scan next time back to a file
 def score(dt_file):
+  #TODO set this process to write the comptued scores to a DB 
   result_process.compute_bt(dt_file)  
 
 
