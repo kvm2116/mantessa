@@ -20,7 +20,7 @@ Takes name of zmap scan file and returns time stamp as datetime obj
 '''
 def time_convert(name):
 	print(name)
-	datetime_split = name.split('/')[2].replace('Z', 'T').split('T')[0:2]
+	datetime_split = name.split('/')[-1].replace('Z', 'T').split('T')[0:2]
 	year = int(datetime_split[0][0:4])
 	month = int(datetime_split[0][4:6])
 	day = int(datetime_split[0][6:])
