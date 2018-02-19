@@ -11,9 +11,9 @@
 - list of IPs and their scores will be in ipscores.csv
 3. choose input source/directory (ensure ipscores.csv in folder with script)
 - if file: 
-	python result_process.py <new-file-path>
+	`python result_process.py <new-file-path>`
 - if dir: 
-	for file in <dir-path>/*; do python result_process.py $file; done
+	`for file in <dir-path>/*; do python result_process.py $file; done`
 - (optimal whitelist is ipscores.csv)
 
 # Optimal Watchlist Analysis
@@ -27,11 +27,11 @@ Once control watchlist is generated from zmap scans, obtain optimal watchlist.
 - note this code can be uncommented during watchlist generation without affecting results
 2. choose input source/directory
 - if file: 
-	python franction_calc.py ipscan.csv <outage-file-path>
+	`python franction_calc.py ipscan.csv <outage-file-path>`
 - if dir: 
-	for file in <dir-path>/*; do python frantion_calc.py ipscan.csv $file; done
+	`for file in <dir-path>/*; do python frantion_calc.py ipscan.csv $file; done`
 - note watchlist analyzed can be changed (to compare to filtered watchlist, etc)
-	python franction_calc.py <watchlist-file-path> <outage-file-path>
+	`python franction_calc.py <watchlist-file-path> <outage-file-path>`
 - (fraction of watchlist IPs up at time of zmap scan in optimal_frac.csv)
 3. compare fraction of watchlist to ground truth fractions via excel
 
