@@ -1,0 +1,102 @@
+Algo:
+
+while(lat){
+	while(long){
+		create grid
+		+long
+	}
+	+lat
+}
+int[] assignGrid(float lat, float long){
+	difLat =
+	difLong = 
+
+	gridLat = difLat/lat
+	gridLong = difLong/long
+}
+
+startLat = 25.118
+startLon = 66.947
+currentLat startLat
+currentLon = startLon
+latIncrement = 0.159
+lonIncrement= 0.220
+
+geoObject = {}
+geoObject['type'] = "FeatureCollection"
+features = []
+while(currentLat <= maxLat):
+	while (currentLon <= maxLong):
+		featureObject = {
+			"type": "Feature",
+			"geometry": {
+				"type": "Polygon",
+				"coordinates": [
+					[
+						[currentLat, currentLon],
+						[currentLat +latIncrement, currentLon],
+						[currentLat, currentLon + lonIncrement],
+						[currentLat + latIncrement, currentLon + lonIncrement]
+					]
+				]
+			},
+			"properties": {
+				"name": "[{},{}]".format(lat, lon)
+			}
+		}
+		features.append(featureObject)
+		currentLon += lonIncrement
+	currentLon = startLon
+	currentLat += latIncrement
+
+
+
+
+
+
+while(lat)
+
+while(long)
+
+
+lat:
+0.15942028985
+
+long:
+0.22
+
+
+//NE
+
+49.002389
+
+66.947028
+
+
+NW
+
+49.002389
+
+124.733056
+
+
+
+SE
+
+25.118333
+
+66.947028
+
+
+SW
+
+25.118333
+
+124.733056
+
+L: 
+57.786028
+
+W:
+23.884056
+
